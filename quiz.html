@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>東進調査団適正診断</title>
+    <style>
+        /* 緑色を基調としたスタイル */
+        :root {
+            --primary-green: #2e7d32;
+            --light-green: #e8f5e9;
+            --button-green: #4caf50;
+            --button-hover: #388e3c;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            background-color: var(--light-green);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            border-top: 10px solid var(--primary-green);
+            /* スマホでのスクロール考慮 */
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        h1 {
+            color: var(--primary-green);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            color: var(--primary-green);
+            font-size: 1.3rem;
+        }
+
+        /* 入力フォーム */
+        input[type="text"] {
+            padding: 12px;
+            font-size: 16px; /* 16px以上にするとiPhoneでズームされない */
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            width: 80%;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        /* ボタン */
+        .btn {
+            background-color: var(--button-green);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin: 10px;
+            touch-action: manipulation; /* スマホでのタップ遅延防止 */
+        }
+
+        .btn:hover {
+            background-color: var(--button-hover);
+        }
+
+        /* 選択肢ボタンエリア */
+        .choices-area {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .choice-btn {
+            width: 45%;
+            padding: 15px 0;
+            font-size: 1.1rem;
+        }
+
+        /* テーブルスタイル */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px 5px;
+            text-align: center;
+        }
+
+        th {
+            background-color: var(--primary-green);
+            color: white;
+            width: 50%;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* 表示切り替え用 */
+        .hidden {
+            display: none;
+        }
+
+        /* 結果画面のスタイル */
+        .result-box {
+            margin: 20px 0;
+            padding: 15px;
+            border: 2px dashed var(--primary-green);
+            border-radius: 10px;
+            background-color: #f1f8e9;
+            text-align: center;
+        }
+
+        .result-tag {
+            font-size: 2rem;
+            font-weight: 900;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .result-type {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            display: block;
+            text-decoration: underline;
+            text-decoration-color: var(--primary-green);
+        }
+
+        .result-desc {
+            text-align: left;
+            padding: 0 5px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            list-style-position: inside; /* スマホで見切れ防止 */
+        }
+
+        .result-desc li {
+            margin-bottom: 8px;
+        }
+
+        .team-display {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        /* スマホ向け調整 (画面幅が狭い時) */
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem;
+                width: 95%;
+            }
+            h1 { font-size: 1.3rem; }
+            .choice-btn { font-size: 1rem; padding: 12px 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="start-screen">
+        <h1>東進調査団適正診断</h1>
+        <p>チーム名を入力して診断を開始してください。</p>
+        <input type="text" id="team-name" placeholder="チーム名" required>
+        <br>
+        <button class="btn" onclick="startQuiz()">診断を始める</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+        <h2 id="question-number">Question 1</h2>
+        <p>あるなしクイズです</p>
+        
+        <table id="quiz-table">
+            <thead>
+                <tr>
+                    <th>ある</th>
+                    <th>なし</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                </tbody>
+        </table>
+
+        <h3 id="question-text" style="margin-top: 15px; font-size:1.1rem;"></h3>
+        
+        <div class="choices-area">
+            <button class="btn choice-btn" onclick="handleAnswer('ある')">ある</button>
+            <button class="btn choice-btn" onclick="handleAnswer('なし')">なし</button>
+        </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+        <h2>あなたのチームのMBTIは...</h2>
+        <div class="team-display">チーム名: <span id="result-team-name"></span></div>
+        
+        <div class="result-box">
+            <span id="res-tag" class="result-tag"></span>
+            <span id="res-type" class="result-type"></span>
+            <ul id="res-list" class="result-desc">
+                </ul>
+        </div>
+
+        <button class="btn" onclick="location.reload()">最初に戻る</button>
+    </div>
+</div>
+
+<script>
+    // クイズデータ (想定解)
+    const quizData = [
+        {
+            items: [
+                {aru: "フォーク", nashi: "ナイフ"},
+                {aru: "巻き戻し", nashi: "早送り"},
+                {aru: "心臓", nashi: "肝臓"},
+                {aru: "信号の青", nashi: "信号の赤"},
+                {aru: "御代理様", nashi: "お雛様"}
+            ],
+            question: "では木村塾東進山本校は？",
+            expected: "ある"
+        },
+        {
+            items: [
+                {aru: "赤", nashi: "青"},
+                {aru: "石", nashi: "左"},
+                {aru: "虹", nashi: "雲"},
+                {aru: "川", nashi: "海"},
+                {aru: "走る", nashi: "歩く"}
+            ],
+            question: "では東進は？",
+            expected: "なし"
+        },
+        {
+            items: [
+                {aru: "天気", nashi: "雨"},
+                {aru: "全身", nashi: "部分"},
+                {aru: "正解", nashi: "誤り"},
+                {aru: "本物", nashi: "似非"},
+                {aru: "主人", nashi: "家来"}
+            ],
+            question: "では東進は？",
+            expected: "なし"
+        },
+        {
+            items: [
+                {aru: "Cat", nashi: "Dog"},
+                {aru: "Song", nashi: "Music"},
+                {aru: "Office", nashi: "Home"},
+                {aru: "Store", nashi: "Shop"}
+            ],
+            question: "Toushinは？",
+            expected: "ある"
+        }
+    ];
+
+    let currentStep = 0;
+    let score = 0; 
+    let teamName = "";
+
+    // クイズ開始
+    function startQuiz() {
+        const inputName = document.getElementById('team-name').value;
+        if (!inputName) {
+            alert("チーム名を入力してください");
+            return;
+        }
+        teamName = inputName;
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
+        showQuestion();
+    }
+
+    // 質問表示
+    function showQuestion() {
+        const data = quizData[currentStep];
+        document.getElementById('question-number').innerText = `Question ${currentStep + 1}`;
+        document.getElementById('question-text').innerText = data.question;
+
+        const tbody = document.getElementById('table-body');
+        tbody.innerHTML = ""; 
+
+        data.items.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${row.aru}</td><td>${row.nashi}</td>`;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // 回答処理
+    function handleAnswer(choice) {
+        if (choice === quizData[currentStep].expected) {
+            score++;
+        }
+        currentStep++;
+
+        if (currentStep < quizData.length) {
+            showQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    // 結果表示
+    function showResult() {
+        document.getElementById('quiz-screen').classList.add('hidden');
+        document.getElementById('result-screen').classList.remove('hidden');
+        
+        document.getElementById('result-team-name').innerText = teamName;
+        
+        const resTag = document.getElementById('res-tag');
+        const resType = document.getElementById('res-type');
+        const resList = document.getElementById('res-list');
+        resList.innerHTML = ""; // リスト初期化
+
+        let resultTexts = [];
+
+        // 結果ロジック
+        if (score === 4) {
+            // 全問正解：NICE
+            resTag.innerText = "[NICE]";
+            resTag.style.color = "#2e7d32"; // 濃い緑
+            resType.innerText = "適性者";
+            resultTexts = [
+                "簡単で分かりやすいアイデアより、複雑で色々考えるアイデアの方が好き",
+                "スクショを撮って早く本部に送ろう！",
+                "実際のデータなどからの議論より、感情を大切にした議論の方が説得力がある"
+            ];
+        } else if (score === 0) {
+            // 全問不正解：AHO
+            resTag.innerText = "[AHO]";
+            resTag.style.color = "#d32f2f"; // 赤
+            resType.innerText = "あほ";
+            resultTexts = [
+                "謎解きが解けない",
+                "英語がわからないから日本語で考えちゃう",
+                "時計が読めないからそのまま物体の名前を書いちゃう"
+            ];
+        } else {
+            // 混合：OSHI
+            resTag.innerText = `[OSHI] (${score}問正解)`;
+            resTag.style.color = "#f57c00"; // オレンジ
+            resType.innerText = "未熟者";
+            resultTexts = [
+                "知らない人と関わったり、人とすぐに仲良くなるのは大変だと思う",
+                "やり直せば1からだぜ？",
+                "少しでも間違えると、自分を出来の悪い人だと思ってしまう"
+            ];
+        }
+
+        // テキストをリストに追加
+        resultTexts.forEach(text => {
+            const li = document.createElement('li');
+            li.innerText = text;
+            resList.appendChild(li);
+        });
+    }
+</script>
+
+</body>
+</html>
