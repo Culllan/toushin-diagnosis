@@ -352,9 +352,9 @@
             ];
         } else if (score === 0) {
             // 全問不正解：AHO
-            resTag.innerText = "[AHO]";
+            resTag.innerText = "[NAKAMA]";
             resTag.style.color = "#d32f2f"; // 赤
-            resType.innerText = "あほ";
+            resType.innerText = "仲間";
             resultTexts = [
                 "謎解きが解けない",
                 "英語がわからないから日本語で考えちゃう",
@@ -362,7 +362,7 @@
             ];
         } else {
             // 混合：OSHI
-            resTag.innerText = `[OSHI] (${score}問正解)`;
+            resTag.innerText = `[OSHI] (${score}}`;
             resTag.style.color = "#f57c00"; // オレンジ
             resType.innerText = "未熟者";
             resultTexts = [
